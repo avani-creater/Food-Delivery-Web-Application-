@@ -3,7 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faCartShopping, faCircleQuestion, faUser } from "@fortawesome/free-solid-svg-icons";
 import useOnlineStatus from "../utils/useOnlineStatus";
 import { useSelector } from "react-redux";
-import appStore from '../utils/appStore'
+import SignIn from "./SignIn";
+import { useState } from "react";
+
 
 function Header(){
 
@@ -11,6 +13,17 @@ function Header(){
     const items = useSelector((state) => state.cart.items);
 
     const onlineStatus = useOnlineStatus();
+
+const [isVisible, setIsVisible] = useState(false);
+
+function openModal(){
+    setIsVisible(true);
+}
+
+function closeModal(){
+    setIsVisible(false);
+}
+
     return(
         <>
        <header className="flex justify-between px-5 h-16 border  shadow-lg shadow-slate-400 ">
@@ -38,13 +51,15 @@ function Header(){
             </li>
 
             <li className="font-medium text-headerColor">
-            <FontAwesomeIcon icon={faUser} className="px-3"/>
-                <Link  to="/Sign-in">Sign in</Link>
-            </li>
+             <FontAwesomeIcon icon={faUser} className="px-3"/>
+                 <Link onClick={openModal}>Sign in</Link>
+             </li>
+
+            <SignIn isVisible={isVisible} onClose={closeModal}></SignIn>
 
             <li className="font-medium text-headerColor">
-          <Link to="/cart">
 
+          <Link to="/cart">
           <FontAwesomeIcon icon={faCartShopping} className="px-3"/>
                 <Link to="/cart">Cart</Link>
                 {items.length}

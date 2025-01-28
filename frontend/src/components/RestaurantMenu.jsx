@@ -1,49 +1,66 @@
+
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import restaurant from "../utils/mockData";
+import { useEffect } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
-import  {addItem} from '../utils/cartSlice'
-function RestaurantMenu(){
+import { addItem } from "../utils/cartSlice";
 
-  const [menuItems,setMenuItems] =useState([]);
+function RestaurantMenu() {
+  const params = useParams();
   const dispatch = useDispatch();
-    const params = useParams();
-console.log("params - ",params)
-   useEffect(()=>{
+
+  const [restaurantMenuItems, setRestaurantMenuItems] = useState([]);
+
+  useEffect(() => {
     fetchMenuItems();
-   })
+  }, []);
 
-   function handleAddItems(item){
-    console.log('item',item)
-dispatch(addItem(item));
-   }
-
-   async function fetchMenuItems() {
-    const response = await fetch(`https://www.swiggy.com/mapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=28.66500&lng=77.44770&restaurantId=311388&submitAction=ENTER`)
-    const data =response.json();
-    console.log(data)
-   }
-    
-   {restaurantMenuItems.map((res)=>{
-    return (
-      <div className="flex w-3/4 mx-auto mb-10 border-b-4 p-4">
-  
-       <div className="flex flex-col w-3/4">
-        <h1>{res.card.info.name}</h1>
-        <h1>{res.card.info.defaultPrice/100}</h1>
-        <h1>{res.card.info.description}</h1>
-       </div>
-  <img
-  className="w-52 h-44 rounded-md border shadow-lg border-gray-100"
-  src={'http:image'} alt=""
-  />
-  
-  <button className="border bg-green-300 h-8 w-8 relative top-16 right-5"
-   onClick={()=>handleAddItems(res)}>Add +</button>
-      </div>
-    );
-   })}
+  function handleAddItem(item) {
+    console.log("Item", item);
+    dispatch(addItem(item));
   }
 
+  async function fetchMenuItems() {
+    console.log("id", params.id);
+    const response = await fetch(
+      `http://localhost:3000/api/restaurantMenuItems/${params.id}`
+    );
+    const data = await response.json();
+
+    console.log("data", data);
+
+    setRestaurantMenuItems(data);
+  }
+
+  return (
+    
+    <div className="flex flex-wrap m-4">
+      <h1>hello</h1>
+    
+      {restaurantMenuItems.map((res) => {
+        return (
+          <div className="flex w-3/4 mx-auto mb-10 border-b-4 p-4">
+            <div className="flex flex-col w-3/4">
+              <h1>{res.name}</h1>
+              <h1>{res.defaultPrice}</h1>
+              <h1>{res.description}</h1>
+            </div>
+            <img
+              className="w-52 h-44 rounded-md border shadow-lg border-gray-100"
+              src={res.imageUrl}
+              alt=""
+            />
+            <button
+              className="border bg-green-300 h-8 relative top-16 right-5"
+              onClick={() => handleAddItem(res)}
+            >
+              Add +
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default RestaurantMenu;

@@ -1,15 +1,15 @@
 
 import { useState, useEffect} from "react";
-import restaurant from "../utils/mockData";
 import RestaurantCard from "./RestaurantCard";
 import SearchBar from "./SearchBar";
 import { Link } from "react-router-dom";
-import TopRatedRestaurent from "./TopRatedRestaurant";
+import TopRatedRestaurant from "./TopRatedRestaurant";
 
 function Body(){
 
 const [searchName,setSearchName]= useState([]);
 
+// Function to update filtered restaurant data
 function showFilteredRestaurant(data){
   console.log("show filteredREstaurant",data)
  setSearchName(data)
@@ -21,29 +21,40 @@ useEffect(()=>{
 },[]);
 
 async function fetchRestaurant(){ 
-  const response = await fetch('https://www.swiggy.com/dapi/restaurants/list/v5?lat=28 6126255&Ing=77.04108959999999&page_type=DESKTOP_WEB_LISTING');
-  const result =await response.json();
-  setSearchName(result?.data.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants)
 
-  console.log(result);
+const accessToken = localStorage.getItem("accessToken");
+  const response = await fetch('http://localhost:3000/api/restaurants',{
+
+    method: "GET",
+    headers: {
+     "Content-Type":"application/json",
+     authorization: `JWT ${accessToken}`
+    },
+  
+  });
+  const result =await response.json();
+  setSearchName(result);
 };
 
-
-    return(
+   return(
         <div className="w-carouselwidth mx-auto">   
         <h2 className="text-headingColor font-extrabold text-2xl">Restaurants with online food delivery</h2> 
-      <SearchBar showFilteredRestaurant={showFilteredRestaurant}/>
-      <TopRatedRestaurent searchName={searchName} setSearchName={setSearchName}/>
+      
+      <SearchBar
+        restaurantData={searchName} // Pass the data for filtering
+        showFilteredRestaurant={showFilteredRestaurant} // Function to update filtered data
+      />
 
+      <TopRatedRestaurant searchName={searchName} setSearchName={setSearchName}/>
+
+  
 <div className=" grid grid-cols-4 gap-3  cursor-pointer">
 {
       searchName.map(values=>{
         return (
-          <>
-          <Link to={`/restaurant/${values.id}`}>
-          <RestaurantCard key={values.info.id} information={values.info.id}/>
+          <Link key={values._id} to={`/restaurant/${values._id}`}>
+          <RestaurantCard information={values}/>
           </Link>
-          </>
         )
       })
    }  

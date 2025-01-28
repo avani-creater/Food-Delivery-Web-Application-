@@ -1,7 +1,9 @@
-import restaurant from '../utils/mockData'
 
-function SearchBar(props){
- let text;
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faSearch} from "@fortawesome/free-solid-svg-icons";
+
+function SearchBar({ restaurantData, showFilteredRestaurant }){
+    let text = ""; // Local variable for search input
 
     function handleChange(e){
         text=e.target.value;
@@ -11,20 +13,23 @@ function SearchBar(props){
 
     function handleClick(){
 console.log("on sumiting",text);
-const filteredRestaurant = restaurant.filter((items)=>{
-    return items.name.toLowerCase().includes(text.toLowerCase());
-})
+
+const filteredRestaurant = restaurantData.filter((items)=>
+items.name.toLowerCase().includes(text.toLowerCase())
+);
 console.log("after filter",filteredRestaurant);
 
-props.showFilteredRestaurant(filteredRestaurant);
+showFilteredRestaurant(filteredRestaurant);
     }
 
     return(
-        <>
-        <input type="text" placeholder="enter food name" className="bg-slate-600" onChange={handleChange}/>
-        <button onClick={handleClick}>Submit</button>
-        </>
+        <div className='h-12 flex justify-center my-8'>
+        <input type="text" placeholder="Search for restaurant, item or more" className="border border-cyan-800 h-10 w-96 rounded-lg mr-1 pl-2"   onChange={handleChange}/>
+        <button onClick={handleClick}><FontAwesomeIcon icon={faSearch} className="bg-black rounded-full p-2 text-white "/></button>
+        </div>
 
     )
 }
 export default SearchBar;
+
+

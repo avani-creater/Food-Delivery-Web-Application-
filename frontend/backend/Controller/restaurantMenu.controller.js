@@ -1,17 +1,17 @@
-import restaurantModel from "../Model/restaurant.model.js";
+import restaurant from '../../src/utils/mockData.js';
+import restaurantMenuModel from '../Model/restaurantMenu.model.js'
+export function createRestaurantMenuItem(req, res) {
+    const { name, imageUrl, defaultPrice, description, restaurantId } = req.body;
 
-export function createRestaurant(req, res) {
-    const { name, imageUrl, rating, cuisines, deliveryTime } = req.body;
-
-    const newRestaurant = new restaurantModel({
+    const newRestaurantMenuItem = new restaurantMenuModel({
         name,
         imageUrl,
-        rating,
-        cuisines,
-        deliveryTime
+        defaultPrice,
+        description,
+        restaurantId
     });
 
-    newRestaurant
+    newRestaurantMenuItem
         .save()
         .then((data) =>{
             if(!data){
@@ -47,16 +47,16 @@ restaurantModel.findByIdAndUpdate(_id, req.body).then(data=>{
 }).catch(err=>res.status(500).json({err:err.message}));
 }
 
-// delete any restaurant
-export function deleteOneRestaurant(req,res){
-    const _id = req.params.id;
-    restaurantModel.findByIdAndDelete(_id).then((data)=>{
-        console.log("Data", data);
-        if(!data){
-            return res.status(404).json({message:"Data not found"});
-        }
-        console.log("deleted successfully");
-        res.json(data);
+export function fetchRestaurantMenuItems(req, res) {
+    const _id= req.params.id;
+    restaurantMenuModel
+        .find({restaurantId: _id})
+        .then((data) => {
+            if (!data) {
+                return res.status(404).json({ message: "No restaurants found" });
+            }
+            res.json(data);
+        })
+        .catch((err) => res.status(500).json({err:err.message}));
 
-    })
-}
+    }
